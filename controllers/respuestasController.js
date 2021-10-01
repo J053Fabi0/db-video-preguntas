@@ -63,6 +63,7 @@ module.exports.setNuevoUsuario = async ({ params: { id } }, res) => {
     }
     return res
       .status(user ? 304 : 201)
+      .header("Access-Control-Allow-Origin", "*")
       .send({ message: user ? "El usuario ya existía. No se ha creado nada." : "Usuario creado." });
   } catch (err) {
     return handleErr(err, res);

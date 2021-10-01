@@ -75,7 +75,7 @@ module.exports.setRespuesta = async ({ params: { id }, body }, res) => {
         _id: id,
         terminoVideo: false,
         respuestas: {},
-        fecha: new Date().toLocaleString().split(" ")[0],
+        fecha: new Date().toLocaleString().split(", ")[0],
       });
       // incrementar los usuarios totales
       await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: 1 } });

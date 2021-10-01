@@ -81,14 +81,21 @@ module.exports.setRespuesta = async ({ params: { id }, body }, res) => {
   const { tiempo, respuesta, esCorrecta } = body;
 
   // Revisar que los datos sean del valor esperado
-  if (typeof tiempo !== "number") return res.status(418).send({ message: "Tiempo debe ser un número." });
+  if (typeof tiempo !== "number")
+    return res
+      .status(418)
+      .header("Access-Control-Allow-Origin", "*")
+      .send({ message: "Tiempo debe ser un número." });
   if (typeof respuesta !== "string")
     return res
       .status(418)
       .header("Access-Control-Allow-Origin", "*")
       .send({ message: "Respuesta debe ser una cadena de caracteres." });
   if (typeof esCorrecta !== "boolean")
-    return res.status(418).send({ message: "EsCorrecta debe ser un booleano." });
+    return res
+      .status(418)
+      .header("Access-Control-Allow-Origin", "*")
+      .send({ message: "EsCorrecta debe ser un booleano." });
 
   try {
     // Revisar que el usuario existe

@@ -128,43 +128,12 @@ module.exports.setTermino = async ({ params: { id } }, res) => {
   }
 };
 
-// --------------------------------------------------------------
-
-module.exports.getTradesInProgress = async (_, res) => {
-  const actualTradesTxID = getTradesInProgress();
-  if (actualTradesTxID.length !== 0) {
-    let actualTradesInfo = [];
-
-    try {
-      for (const TxID of actualTradesTxID) {
-        const actualTrade = await tradesDB.findOne({ TxID });
-        actualTradesInfo.push(actualTrade);
-      }
-    } catch (err) {
-      return handleErr(err, res);
-    }
-
-    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: actualTradesInfo });
-  } else return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: [] });
-};
-
-module.exports.getAllTrades = async (_, res) => {
-  let allTrades;
+module.exports.deleteUser = async ({ params: { id } }, res) => {
   try {
-    allTrades = await tradesDB.find({});
+    await respuestasDB.remove({ _id: id });
+
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: 1 });
   } catch (err) {
     return handleErr(err, res);
   }
-  return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: allTrades });
-};
-
-module.exports.getOneTrade = async ({ params }, res) => {
-  let trade;
-  try {
-    const { TxID } = params;
-    trade = await tradesDB.findOne({ TxID });
-  } catch (err) {
-    return handleErr(err, res);
-  }
-  return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: trade });
 };

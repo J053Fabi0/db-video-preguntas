@@ -12,4 +12,6 @@ router.post("/termino/:id", respuestasControler.setTermino);
 router.post("/respuesta/:id", respuestasControler.setRespuesta);
 router.post("/nuevoUsuario/:id", respuestasControler.setNuevoUsuario);
 
+router.delete("/deleteUser/:id", respuestasControler.deleteUser);
+
 module.exports = router;

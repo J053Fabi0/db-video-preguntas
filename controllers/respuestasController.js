@@ -52,24 +52,6 @@ module.exports.getNumeroTotalUsuariosQueTerminaron = async (_, res) => {
   }
 };
 
-module.exports.setNuevoUsuario = async ({ params: { id } }, res) => {
-  try {
-    const user = await respuestasDB.count({ _id: id });
-    if (!user) {
-      // Insertar el nuevo usuario
-      await respuestasDB.insert({ _id: id, terminoVideo: false, respuestas: {} });
-      // incrementar los usuarios totales
-      await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: 1 } });
-    }
-    return res
-      .status(user ? 304 : 201)
-      .header("Access-Control-Allow-Origin", "*")
-      .send({ message: user ? "El usuario ya existía. No se ha creado nada." : "Usuario creado." });
-  } catch (err) {
-    return handleErr(err, res);
-  }
-};
-
 module.exports.setRespuesta = async ({ params: { id }, body }, res) => {
   // Revisar que tiene todos los valores necesarios el body
   if (body.tiempo === undefined && body.respuesta === undefined && body.esCorrecta === undefined)
@@ -100,8 +82,12 @@ module.exports.setRespuesta = async ({ params: { id }, body }, res) => {
   try {
     // Revisar que el usuario existe
     const user = await respuestasDB.count({ _id: id });
-    if (!user)
-      return res.status(418).header("Access-Control-Allow-Origin", "*").send({ message: "El usuario no existe." });
+    if (!user) {
+      // Insertar el nuevo usuario
+      await respuestasDB.insert({ _id: id, terminoVideo: false, respuestas: {} });
+      // incrementar los usuarios totales
+      await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: 1 } });
+    }
 
     await respuestasDB.update(
       { _id: id },

@@ -93,6 +93,7 @@ module.exports.setTermino = async ({ params: { id } }, res) => {
     if (!user) return res.status(418).send({ message: "El usuario no existe." });
 
     await respuestasDB.update({ _id: id }, { $set: { terminoVideo: true } });
+    await respuestasDB.update({ _id: "usuarios_que_terminaron" }, { $inc: { usuarios_que_terminaron: 1 } });
 
     return res.status(200).send({ message: 1 });
   } catch (err) {

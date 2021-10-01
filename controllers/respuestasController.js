@@ -131,6 +131,7 @@ module.exports.setTermino = async ({ params: { id } }, res) => {
 module.exports.deleteUser = async ({ params: { id } }, res) => {
   try {
     await respuestasDB.remove({ _id: id });
+    await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: -1 } });
 
     return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: 1 });
   } catch (err) {

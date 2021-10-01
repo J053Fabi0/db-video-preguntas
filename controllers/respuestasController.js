@@ -110,8 +110,13 @@ module.exports.setTermino = async ({ params: { id } }, res) => {
 
 module.exports.deleteUser = async ({ params: { id } }, res) => {
   try {
-    await respuestasDB.remove({ _id: id });
-    await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: -1 } });
+    const user = await respuestasDB.findOne({ _id: id });
+    if (user) {
+      await respuestasDB.remove({ _id: id });
+      await respuestasDB.update({ _id: "usuarios_totales" }, { $inc: { usuarios_totales: -1 } });
+      if (user.terminoVideo)
+        await respuestasDB.update({ _id: "usuarios_que_terminaron" }, { $inc: { usuarios_que_terminaron: -1 } });
+    }
 
     return res.status(200).send({ message: 1 });
   } catch (err) {

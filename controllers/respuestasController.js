@@ -1,6 +1,6 @@
 const { respuestasDB } = require("../functions/initDatabase");
 const handleErr = (error, res) => {
-  res.status(400).send({ error });
+  res.status(400).header("Access-Control-Allow-Origin", "*").send({ error });
   console.log(error);
 };
 
@@ -18,7 +18,7 @@ module.exports.getTodosLosDatos = async (_, res) => {
         todosLosDatos[_id] = datos;
       }
     }
-    return res.status(200).send({ message: todosLosDatos });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: todosLosDatos });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -27,7 +27,7 @@ module.exports.getTodosLosDatos = async (_, res) => {
 module.exports.getInfoUsuario = async ({ params: { id } }, res) => {
   try {
     const { _id, ...user } = await respuestasDB.findOne({ _id: id });
-    return res.status(200).send({ message: user });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: user });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -37,7 +37,7 @@ module.exports.getNumeroTotalUsuarios = async (_, res) => {
   try {
     const { usuarios_totales } = await respuestasDB.findOne({ _id: "usuarios_totales" });
     console.log(usuarios_totales, "usuarios_totales");
-    return res.status(200).send({ message: usuarios_totales });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: usuarios_totales });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -46,7 +46,7 @@ module.exports.getNumeroTotalUsuarios = async (_, res) => {
 module.exports.getNumeroTotalUsuariosQueTerminaron = async (_, res) => {
   try {
     const { usuarios_que_terminaron } = await respuestasDB.findOne({ _id: "usuarios_que_terminaron" });
-    return res.status(200).send({ message: usuarios_que_terminaron });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: usuarios_que_terminaron });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -73,27 +73,34 @@ module.exports.setNuevoUsuario = async ({ params: { id } }, res) => {
 module.exports.setRespuesta = async ({ params: { id }, body }, res) => {
   // Revisar que tiene todos los valores necesarios el body
   if (body.tiempo === undefined && body.respuesta === undefined && body.esCorrecta === undefined)
-    return res.status(418).send({ message: "Faltan los datos tiempo, respuesta o esCorrecta en el body." });
+    return res
+      .status(418)
+      .header("Access-Control-Allow-Origin", "*")
+      .send({ message: "Faltan los datos tiempo, respuesta o esCorrecta en el body." });
 
   const { tiempo, respuesta, esCorrecta } = body;
 
   // Revisar que los datos sean del valor esperado
   if (typeof tiempo !== "number") return res.status(418).send({ message: "Tiempo debe ser un número." });
   if (typeof respuesta !== "string")
-    return res.status(418).send({ message: "Respuesta debe ser una cadena de caracteres." });
+    return res
+      .status(418)
+      .header("Access-Control-Allow-Origin", "*")
+      .send({ message: "Respuesta debe ser una cadena de caracteres." });
   if (typeof esCorrecta !== "boolean")
     return res.status(418).send({ message: "EsCorrecta debe ser un booleano." });
 
   try {
     // Revisar que el usuario existe
     const user = await respuestasDB.count({ _id: id });
-    if (!user) return res.status(418).send({ message: "El usuario no existe." });
+    if (!user)
+      return res.status(418).header("Access-Control-Allow-Origin", "*").send({ message: "El usuario no existe." });
 
     await respuestasDB.update(
       { _id: id },
       { $set: { [`respuestas.${tiempo}`]: { tiempo, respuesta, esCorrecta } } }
     );
-    return res.status(200).send({ message: 1 });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: 1 });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -103,11 +110,12 @@ module.exports.setTermino = async ({ params: { id } }, res) => {
   try {
     // Revisar que el usuario existe
     const user = await respuestasDB.count({ _id: id });
-    if (!user) return res.status(418).send({ message: "El usuario no existe." });
+    if (!user)
+      return res.status(418).header("Access-Control-Allow-Origin", "*").send({ message: "El usuario no existe." });
 
     await respuestasDB.update({ _id: id }, { $set: { terminoVideo: true } });
 
-    return res.status(200).send({ message: 1 });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: 1 });
   } catch (err) {
     return handleErr(err, res);
   }
@@ -129,8 +137,8 @@ module.exports.getTradesInProgress = async (_, res) => {
       return handleErr(err, res);
     }
 
-    return res.status(200).send({ message: actualTradesInfo });
-  } else return res.status(200).send({ message: [] });
+    return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: actualTradesInfo });
+  } else return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: [] });
 };
 
 module.exports.getAllTrades = async (_, res) => {
@@ -140,7 +148,7 @@ module.exports.getAllTrades = async (_, res) => {
   } catch (err) {
     return handleErr(err, res);
   }
-  return res.status(200).send({ message: allTrades });
+  return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: allTrades });
 };
 
 module.exports.getOneTrade = async ({ params }, res) => {
@@ -151,5 +159,5 @@ module.exports.getOneTrade = async ({ params }, res) => {
   } catch (err) {
     return handleErr(err, res);
   }
-  return res.status(200).send({ message: trade });
+  return res.status(200).header("Access-Control-Allow-Origin", "*").send({ message: trade });
 };
